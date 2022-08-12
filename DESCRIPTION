@@ -1,0 +1,16 @@
+Package: tgexer
+Type: Package
+Title: Tissue-specific gene expression examiner
+Version: 0.1.0
+Author: c(person("Torda", "Varga", email = "varga.torda@gmail.com", role = c("aut", "cre")))
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 2.10)
+RoxygenNote: 7.1.2
+Imports: 
+    ggplot2
