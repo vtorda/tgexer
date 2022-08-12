@@ -1,4 +1,5 @@
 #' Boxplot of expression data
+#'
 #' Plotting expression data of Coprinopsis cinerea
 #'
 #' @param gene A character of a gene name: CopciAB_ and a number. E.g., CopciAB_411205
@@ -14,9 +15,9 @@ copci_exp_plot <- function(gene, log = TRUE, expdata = exp_data, coldata = df_co
                    facets = coldata[,colnames(coldata) %in% facetting],
                    fill = coldata[,colnames(coldata) %in% color])
   if(log){
-    ylab_text <- "Log 2 Normalized Counts"
+    ylab_text <- paste0("Log 2 Normalized Counts of ", gene)
   }else{
-    ylab_text <- "Normalized Counts"
+    ylab_text <- paste0("Normalized Counts of ", gene)
     df$expression <- 2^df$expression
   }
   ggplot(df, aes(x = samples, y = expression, fill = fill)) +
