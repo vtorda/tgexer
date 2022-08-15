@@ -2,8 +2,7 @@
 % Please edit documentation in R/copci_exp_plot.R
 \name{copci_exp_plot}
 \alias{copci_exp_plot}
-\title{Boxplot of expression data
-Plotting expression data of Coprinopsis cinerea}
+\title{Boxplot of expression data}
 \usage{
 copci_exp_plot(
   gene,
@@ -21,6 +20,5 @@ copci_exp_plot(
 \item{log}{A logical indicating whether expression values should be log 2 transformed (Default is TRUE)}
 }
 \description{
-Boxplot of expression data
 Plotting expression data of Coprinopsis cinerea
 }

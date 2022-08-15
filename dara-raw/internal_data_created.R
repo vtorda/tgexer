@@ -1,5 +1,9 @@
 library(DESeq2)
 library(stringr)
+library(magick)
+library(rsvg)
+library(RColorBrewer)
+# Exp data
 load("~/Documents/MUNKA/PhD/Single_cell/sequencing_results/Final_analysis_2022/data/Combined_DESeqData.RData")
 TissueSpecFBDevelopment <- unique(df_combined$sample[df_combined$seqtype %in% "TissuePairedEnd"])
 SimpleSugarSolid <- c("Xyl_S", "Ara_S", "Fru_S", "Man_S", "GA_S", "SoA_S", "Rib_S", "Con_S", "Glu_S")
@@ -58,3 +62,50 @@ normalizationFactors(ddSE) <- EDASeqNormFactors_Combined
 vsd_smoc2 <- vst(ddSE, blind = TRUE)
 exp_data <- assay(vsd_smoc2)
 usethis::use_data(exp_data, df_combined, internal = TRUE)
+# Image data
+load("./R/sysdata.rda")
+df_plot <- df_combined[df_combined$groups %in% "TissueSpecFBDevelopment", ]
+samples <- unique(df_plot$sample)
+df_plot <- data.frame(images = sapply(str_split(samples, "_"), function(x) x[1]),
+                      areas = samples, coords = rep(NA, length(samples)),
+                      stringsAsFactors = FALSE)
+df_plot <- df_plot[order(df_plot$images, df_plot$areas),]
+df_plot <- df_plot[c(29, 1:28),]
+### Define tissue_names, that have multiple areas
+df_plot$areas[str_detect(df_plot$areas, "External")] <- str_c(df_plot$areas[str_detect(df_plot$areas, "External")], "_A")
+df_temp <- df_plot[str_detect(df_plot$areas, "External"),]
+df_temp$areas <- str_replace(df_temp$areas, "_A", "_B")
+df_plot <- rbind(df_plot, df_temp)
+#### P0 has only 1 external nodulus sample
+df_plot <- df_plot[-30,]
+df_plot$areas[df_plot$areas %in% "P0_External_nodulus_A"] <- "P0_External_nodulus"
+df_plot$areas[str_detect(df_plot$areas, "Gill")] <- str_c(df_plot$areas[str_detect(df_plot$areas, "Gill")], "_A")
+df_temp <- df_plot[str_detect(df_plot$areas, "Gill"),]
+df_temp$areas <- str_replace(df_temp$areas, "_A", "_B")
+df_plot <- rbind(df_plot, df_temp)
+df_plot$areas[str_detect(df_plot$areas, "PV")] <- str_c(df_plot$areas[str_detect(df_plot$areas, "PV")], "_A")
+df_temp <- df_plot[str_detect(df_plot$areas, "PV"),]
+df_temp$areas <- str_replace(df_temp$areas, "_A", "_B")
+df_plot <- rbind(df_plot, df_temp)
+df_plot <- df_plot[order(df_plot$images, df_plot$areas),]
+df_plot <- df_plot[c(35, 1:34),]
+df_plot <- df_plot[,1:2] # only the first two columns are needed
+
+image_data <- image_data_process(df_plot)
+image_df <- image_data$image_df
+
+
+### mean expression data
+df_combined2 <- df_combined[df_combined$groups %in% "TissueSpecFBDevelopment", ]
+expression_data <- exp_data[,colnames(exp_data) %in% df_combined2$Library_ID_final]
+mean_exp_data <- mean_expression(expression_data = expression_data,
+                                 coldata = df_combined2,
+                                 sample_col = "sample",
+                                 id_col = "Library_ID_final")
+
+usethis::use_data(exp_data, df_combined, image_df, mean_exp_data, internal = TRUE, overwrite = TRUE)
+
+# Test copci_image_data and copci plot
+
+image_data <- copci_image_data()
+copci_dev_heatmap(gene = "CopciAB_411205", image_data = image_data)
